@@ -1,0 +1,29 @@
+# Blueprint de Render: crea la base PostgreSQL y el servicio web (API + interfaz) con un clic.
+# Al arrancar, el sistema crea las tablas y, si la base está vacía, carga los datos de demostración.
+databases:
+  - name: puqui-db
+    plan: free
+    databaseName: puqui
+    user: puqui
+
+services:
+  - type: web
+    name: puqui-cookies-house
+    runtime: node
+    plan: free
+    buildCommand: npm --prefix backend install && npm --prefix frontend install --include=dev && npm --prefix frontend run build
+    startCommand: npm --prefix backend start
+    healthCheckPath: /api/salud
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: puqui-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      # Pon "false" para no cargar datos de demostración ni mostrar los usuarios de prueba en el inicio de sesión.
+      - key: SEED_DEMO
+        value: "true"

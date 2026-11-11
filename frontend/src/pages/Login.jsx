@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useApi';
 import { ROLES } from '../lib/roles';
 import { Aviso, Icono, Logo } from '../components/ui';
 
-// Usuarios del script de datos de demostración (npm run db:seed). Solo se muestran al usar el sistema en local.
+// Usuarios del script de datos de demostración (npm run db:seed).
 const DEMO = [
   ['propietaria@puqui.pe', 'Rosa Mendoza', 'Propietario'],
   ['admin@puqui.pe', 'Aldair Mendoza', 'Administrador'],
@@ -20,6 +20,11 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [estado, setEstado] = useState({ enviando: false, error: null });
+  // Los usuarios de prueba se muestran en local o cuando el servidor tiene los datos de demostración activos.
+  const [verDemo, setVerDemo] = useState(esLocal);
+  useEffect(() => {
+    fetch('/api/salud').then((r) => r.json()).then((d) => d.demo && setVerDemo(true)).catch(() => {});
+  }, []);
 
   async function entrar(e) {
     e.preventDefault();
@@ -65,7 +70,7 @@ export default function Login() {
               {estado.enviando ? 'Ingresando…' : 'Ingresar'}
             </button>
           </form>
-          {esLocal && (
+          {verDemo && (
             <details className="demo-usuarios">
               <summary>Usuarios de demostración (contraseña «puqui2026»)</summary>
               {DEMO.map(([correo, nombre, rol]) => (

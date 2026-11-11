@@ -28,4 +28,17 @@ async function aplicarMigraciones(client) {
   return aplicadas;
 }
 
-module.exports = { aplicarMigraciones, MIGRACIONES };
+// Aplica schema.sql (idempotente) y luego las migraciones pendientes.
+async function prepararEsquema(pool) {
+  const fs = require('fs');
+  const path = require('path');
+  const client = await pool.connect();
+  try {
+    await client.query(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
+    return await aplicarMigraciones(client);
+  } finally {
+    client.release();
+  }
+}
+
+module.exports = { aplicarMigraciones, prepararEsquema, MIGRACIONES };

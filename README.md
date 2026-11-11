@@ -105,6 +105,24 @@ npm run build       # compila el frontend
 npm start           # la API sirve también la interfaz en http://localhost:4000
 ```
 
+## Publicarlo en la web (Render)
+
+El repositorio incluye `render.yaml`, que crea en [Render](https://render.com) la base PostgreSQL y el servicio web. Al arrancar, el sistema crea las tablas solo y, si la base está vacía, carga los datos de demostración. No hay que ejecutar comandos en el servidor.
+
+1. Crea una cuenta en [render.com](https://render.com) entrando con tu cuenta de GitHub.
+2. Abre este enlace, que despliega la rama del sistema:
+   [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/aldairmend/PUQUI-COOKIES-HOUSE/tree/claude/puqui-cookies-project-4urocz)
+
+   También puedes hacerlo a mano: **New → Blueprint**, elige el repositorio `PUQUI-COOKIES-HOUSE`, cambia la rama a `claude/puqui-cookies-project-4urocz` y pulsa **Apply**.
+3. Espera a que termine (unos 3 a 5 minutos). Tu sistema queda en una dirección como `https://puqui-cookies-house.onrender.com`.
+
+Ten en cuenta lo siguiente sobre el plan gratuito de Render:
+- **La base de datos gratuita vence a los 30 días.** Para conservar los datos, pásala a un plan de pago antes de esa fecha. Otra opción es crear una base gratuita en [Neon](https://neon.tech) y poner su cadena de conexión en la variable `DATABASE_URL` del servicio.
+- El servicio se «duerme» tras 15 minutos sin uso; la primera visita después tarda cerca de un minuto en despertar.
+- Para uso real: pon `SEED_DEMO` en `false` (no carga datos de prueba ni muestra los usuarios de demostración) y crea las cuentas reales. Las contraseñas de demostración son públicas.
+
+Cualquier otro hosting con Node.js 18+ y PostgreSQL 14+ también sirve. Define `DATABASE_URL`, `JWT_SECRET` y `PORT`, compila con `npm run setup && npm run build` e inicia con `npm start`.
+
 ## Usuarios de demostración
 
 Todos usan la contraseña **`puqui2026`**. En `localhost`, la pantalla de inicio de sesión también los muestra para elegirlos con un clic.
@@ -139,4 +157,4 @@ Los precios, sabores y nombres son de demostración y no corresponden a cifras r
 
 - **Asistencia:** el navegador pide permiso de ubicación. Funciona en `localhost` y en sitios con HTTPS. La ubicación solo se toma al marcar, con el consentimiento del trabajador (Ley N.° 29733).
 - **PWA:** al publicarlo con HTTPS, se instala desde el navegador del celular («Agregar a la pantalla de inicio»). El service worker guarda solo la interfaz, nunca los datos de la API, así que el sistema necesita conexión a internet.
-- **Despliegue:** basta un hosting con Node.js y PostgreSQL. Define `PORT`, `DATABASE_URL` y `JWT_SECRET`, ejecuta `npm run setup && npm run db:schema && npm run build` y luego `npm start`.
+

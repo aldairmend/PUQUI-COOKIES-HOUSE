@@ -71,7 +71,8 @@ async function limpiar(c) {
     promociones, turnos, lotes, sabores, productos, usuarios, modulos RESTART IDENTITY CASCADE`);
 }
 
-async function main() {
+// Crea los datos de demostración. Lanza un error si algo falla (todo o nada).
+async function sembrar() {
   const ahoraLima = partesLima();
   const hoy = ahoraLima.fecha;
   const [hh, mm] = ahoraLima.hora.split(':').map(Number);
@@ -288,12 +289,19 @@ async function main() {
     USUARIOS.forEach((u) => console.log(`  ${u.rol.padEnd(13)} ${u.email.padEnd(22)} ${u.nombre}${u.modulo ? ' · ' + MODULOS[u.modulo - 1].nombre : ''}`));
   } catch (err) {
     await c.query('ROLLBACK').catch(() => {});
-    console.error('No se pudieron crear los datos de demostración:', err);
-    process.exitCode = 1;
+    throw err;
   } finally {
     c.release();
-    await pool.end();
   }
 }
 
-main();
+module.exports = { sembrar };
+
+if (require.main === module) {
+  sembrar()
+    .catch((err) => {
+      console.error('No se pudieron crear los datos de demostración:', err);
+      process.exitCode = 1;
+    })
+    .finally(() => pool.end());
+}

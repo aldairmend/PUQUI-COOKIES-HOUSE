@@ -8,7 +8,7 @@ const app = express();
 app.disable('x-powered-by');
 app.use(express.json({ limit: '200kb' }));
 
-app.get('/api/salud', (req, res) => res.json({ ok: true }));
+app.get('/api/salud', (req, res) => res.json({ ok: true, demo: process.env.SEED_DEMO !== 'false' }));
 app.use('/api', routes);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada.' }));
 
